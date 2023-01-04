@@ -12,9 +12,9 @@ def pegaImg(_site):
 
 def downloadImage(_img, _title):
     try: 
-        urllib.request.urlretrieve(_img, f'novel/{_title}.jpg')
+        urllib.request.urlretrieve(_img, f'novels/{_title}/{_title}.jpg')
         currentDirectory = os. getcwd()
-        _routeImg = f'{currentDirectory}/novel/{_title}.jpg'
+        _routeImg = f'{currentDirectory}/novels/{_title}/{_title}.jpg'
         return _routeImg
     except:
         erro = sys.exc_info()
