@@ -1,16 +1,17 @@
-from modules import url, site, img, title, link, novel
+from modules import url, site, img, title, link, novel, debug
 
-def chamaModulos():
-    _url = url.pedirUrl()
+def callModules():
+    # debug.cleanDiretory()
+    _url = url.getUrl()
     _site = site.trataUrl(_url)
     _img = img.pegaImg(_site)
     _title = title.getTitle(_site)
-    _routeImg = img.downloadImage(_img, _title)
     _links = link.pegaCapitulos(_site)
     _novel = novel.writeNovel(_links, _title)
-    return _url, _site, _img, _title, _routeImg, _links, _novel
+    _routeImg = img.downloadImage(_img, _title)
+    return _url, _site, _img, _title, _links, _novel, _routeImg
 
-url, site, img, title, routeImg, links, novel = chamaModulos()
+url, site, img, title, links, novel, routeImg = callModules()
 
 # site = BeautifulSoup(requests.get(input('Digite a URL com o volume a novel DxD: ')).content, 'html.parser')
 
