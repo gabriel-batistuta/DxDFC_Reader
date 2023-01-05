@@ -1,19 +1,20 @@
-from modules import url, site, img, title, link, novel, debug
+from modules import linkChapters, sumary, url, site, img, title, debug, getChapter
 import os
 
 
 def callModules():
     # debug.cleanDiretory()
     _url = url.getUrl()
-    _site = site.trataUrl(_url)
-    _img = img.pegaImg(_site)
+    _site = site.filterUrl(_url)
+    _img = img.getImg(_site)
     _title = title.getTitle(_site)
-    _links = link.pegaCapitulos(_site)
-    _novel = novel.writeNovel(_links, _title)
+    _links = linkChapters.getLinks(_site)
+    _sumary = sumary.writeSumary(_links, _title)
+    _novel = getChapter.getText(_links , _title)
     _routeImg = img.downloadImage(_img, _title)
-    return _url, _site, _img, _title, _links, _novel, _routeImg
+    return _url, _site, _img, _title, _links, _sumary, _novel, _routeImg
 
-url, site, img, title, links, novel, routeImg = callModules()
+url, site, img, title, links, sumary, novel, routeImg = callModules()
 
 # site = BeautifulSoup(requests.get(input('Digite a URL com o volume a novel DxD: ')).content, 'html.parser')
 
@@ -27,4 +28,4 @@ REVERSE = "\033[;7m"
 
 os.system('clear')
 
-print(f'\n\n{RED}SITE:{RESET} {url}\n\n{CYAN}NOVEL:{RESET} {title}\n\n{RED}LINK DA IMAGEM:{RESET} {img}\n\n{CYAN}IMAGEM em:{RESET} {routeImg}\n\n{RED}NOVEL em:{RESET} {novel}')
+print(f'\n\n{RED}SITE:{RESET} {url}\n\n{CYAN}NOVEL:{RESET} {title}\n\n{RED}LINK DA IMAGEM:{RESET} {img}\n\n{CYAN}IMAGEM em:{RESET} {routeImg}\n\n{RED}SUMÁRIO em:{RESET} {sumary}\n\n{CYAN}NOVEL em:{RESET} {novel}\n')
