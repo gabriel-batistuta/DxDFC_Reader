@@ -1,4 +1,4 @@
-from modules import linkChapters, sumary, url, site, img, title, debug, getChapter
+from modules import linkChapters, sumary, url, site, img, title, debug, getChapter, folder, header
 import os
 
 
@@ -6,8 +6,10 @@ def callModules():
     # debug.cleanDiretory()
     _url = url.getUrl()
     _site = site.filterUrl(_url)
-    _img = img.getImg(_site)
     _title = title.getTitle(_site)
+    folder.makeFolder(_title)
+    header.writeHeader(_site, _title)
+    _img = img.getImg(_site)
     _links = linkChapters.getLinks(_site)
     _sumary = sumary.writeSumary(_links, _title)
     _novel = getChapter.getText(_links , _title)
