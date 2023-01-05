@@ -11,13 +11,14 @@ def writeNovel(_links, _title):
     else:
         os.mkdir(f'./novels/{_title}')
 
-    file = open(f'novels/{_title}/{_title}.txt','a+')
-    for i, _link in enumerate(_links):
-        if i != 0:
-            file.write(f'CAPÍTULO {i}: {_link.text}\n\n')
-    file.close()
+    _links.pop(0)
 
-    currentDirectory = os. getcwd()
+    _file = open(f'novels/{_title}/sumary - {_title}.txt','a+')
+    for _link in _links:
+        _file.write(f'{_link.text}\n\n')
+    _file.close()
 
-    _novel = f'{currentDirectory}/novels/{_title}.txt'
+    _currentDirectory = os. getcwd()
+
+    _novel = f'{_currentDirectory}/novels/{_title}.txt'
     return _novel
