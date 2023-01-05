@@ -1,16 +1,6 @@
 import os
 
 def writeSumary(_links, _title):
-    if os.path.isdir('./novels'):
-        pass
-    else:
-        os.mkdir('./novels')
-
-    if os.path.isdir(f'./novels/{_title}'):
-        pass
-    else:
-        os.mkdir(f'./novels/{_title}')
-
     _links.pop(0)
 
     _file = open(f'novels/{_title}/sumary - {_title}.txt','a+')
