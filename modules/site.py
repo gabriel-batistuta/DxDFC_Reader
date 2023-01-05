@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-def trataUrl(_url):
+def filterUrl(_url):
     _response = requests.get(_url)
     _content = _response.content
     _site = BeautifulSoup(_content, 'html.parser')
