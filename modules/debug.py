@@ -33,3 +33,6 @@ def cleanDiretory():
             os.rmdir('./novels')
     else:
         pass
+
+if __name__ == '__main__':
+    cleanDiretory()
