@@ -13,7 +13,6 @@ def getLinks(site):
         return links
     
     def removeRepeatedCaps(capList):
-        # return list(dict.fromkeys(capList))
         listNoReapeated = []
         for i in capList:
             link = i["href"].strip()
