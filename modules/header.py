@@ -1,10 +1,10 @@
-def writeHeader(_site, _title):
-    div = _site.find('div', attrs={'class': 'header-widget'})
-    _blog = div.find('a', attrs={'href': 'https://highschooldxdfc.blogspot.com/'})
-    _blogLink = _blog['href']
-    _blog = _blog.text.strip()
-    _aboutBlog = div.find('p')
-    _aboutBlog = _aboutBlog.text.strip()
+def writeHeader(site, title):
+    div = site.find('div', attrs={'class': 'header-widget'})
+    blog = div.find('a', attrs={'href': 'https://highschooldxdfc.blogspot.com/'})
+    blogLink = blog['href']
+    blog = blog.text.strip()
+    aboutBlog = div.find('p')
+    aboutBlog = aboutBlog.text.strip()
 
-    _folderBlog = open(f'novels/{_title}/README.txt','a+')
-    _folderBlog.write(f'{_blog}\n{_aboutBlog}\n{_blogLink}')
+    folderBlog = open(f'novels/{title}/README.txt','a+')
+    folderBlog.write(f'{blog}\n{aboutBlog}\n{blogLink}')
