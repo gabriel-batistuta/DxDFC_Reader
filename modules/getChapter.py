@@ -1,11 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
 import os
+import ssl
+from urllib import request, parse, error
 
 def getText(_links, _title):
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False 
+    ctx.verify_mode = ssl.CERT_NONE
+
     for _link in _links:
         _href = _link['href']
-        _site_cap = BeautifulSoup(requests.get(_href).content, 'html.parser')
+        html = request.urlopen(_href, context=ctx).read()
+        _site_cap = BeautifulSoup(html, 'html.parser')
+        print(html)
+        print(_site_cap)
         _divPost = _site_cap.find('div', attrs={'class': 'post-content container'})
         _title_cap = _divPost.find('h3', attrs={'class': 'post-title entry-title'})
         _title_cap = _title_cap.text
