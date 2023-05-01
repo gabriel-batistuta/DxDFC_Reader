@@ -1,15 +1,34 @@
-def getLinks(_site):
-    _caps = _site.find('div', attrs={'class': 'post-body entry-content float-container'})
+def getLinks(site):
+    def getLinksInSite(site):
+        caps = site.find('div', attrs={'class': 'post-body entry-content float-container'})
+        links = caps.find_all('a')
+        
+        return links
 
-    _links = _caps.find_all('a')
-    _keys = ['Download', 'PDF', 'pdf', 'ePub', 'EPUB', 'epub']
+    def filterLinksCaps(links):
+        keys = ['DOWNLOAD', 'PDF', 'EPUB', 'JPG', 'MEGA', 'JPEG']
+        for key in keys:
+            links = list(filter(lambda x: key.lower() not in x["href"], links))
+
+        return links
     
-    for _key in _keys:
-        for _link in _links:
-            if (_key.lower() in _link.text.lower()) == True:
-                try:
-                    _links.remove(_link)
-                except:
-                    pass
+    def removeRepeatedCaps(capList):
+        listNoReapeated = []
+        for i in capList:
+            link = i["href"].strip()
+            if link not in str(listNoReapeated):
+                listNoReapeated.append(i)
 
-    return _links
+        return listNoReapeated
+
+    links = getLinksInSite(site)
+    links = filterLinksCaps(links)
+    links = removeRepeatedCaps(links)
+
+    # debuging ;)
+    '''
+    for i in links:
+        print(f'\n\n{i["href"]}\n\n')               
+    '''
+    
+    return links

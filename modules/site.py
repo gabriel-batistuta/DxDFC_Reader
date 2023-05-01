@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 
-def filterUrl(_url):
-    _response = requests.get(_url)
-    _content = _response.content
-    _site = BeautifulSoup(_content, 'html.parser')
+def filterUrl(url):
+    response = requests.get(url)
+    content = response.content
+    site = BeautifulSoup(content, 'html.parser')
 
-    return _site
+    return site

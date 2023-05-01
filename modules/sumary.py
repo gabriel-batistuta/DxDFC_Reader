@@ -1,12 +1,19 @@
 import os
 
-def writeSumary(_links, _title):
-    _file = open(f'novels/{_title}/sumary - {_title}.txt','a+')
-    for _link in _links:
-            _file.write(f'{_link.text}\n\n')
-    _file.close()
+def writeSumary(links, title):
+    
+    def writeInSumary(links, title):
+        with open(f'novels/{title}/sumary - {title}.txt','a+') as file:
+            for link in links:
+                file.write(f'{link.text}\n\n')
+            file.close()
 
-    _currentDirectory = os. getcwd()
+    def log():
+        currentDirectory = os. getcwd()
+        sumary = f'{currentDirectory}/novels/{title}/sumary - {title}.txt'
 
-    _sumary = f'{_currentDirectory}/novels/{_title}/sumary - {_title}.txt'
-    return _sumary
+        return sumary
+    
+    writeInSumary(links, title)
+
+    return log()

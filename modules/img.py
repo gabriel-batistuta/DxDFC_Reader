@@ -2,25 +2,30 @@ import requests
 import sys
 import os
 
-def getImg(_site):
-    _imgs = _site.find_all('img')
+def getImg(site):
+    imgs = site.find_all('img')
     
-    _imagem = _imgs[0]['src']
-    print(_imagem)
-    return _imagem
+    imagem = imgs[0]['src']
 
-def downloadImage(_img, _title):
+    def log():
+        print(imagem)
+
+        return imagem
+    
+    return log()
+
+def downloadImage(img, title):
     try: 
-        with open(f'novels/{_title}/cover - {_title}.jpg', 'wb') as file:
-            data = requests.get(_img)
+        with open(f'novels/{title}/cover - {title}.jpg', 'wb') as file:
+            data = requests.get(img)
             file.write(data.content)
             file.close()
 
         currentDirectory = os. getcwd()
-        _routeImg = f'{currentDirectory}/novels/{_title}/cover - {_title}.jpg'
+        routeImg = f'{currentDirectory}/novels/{title}/cover - {title}.jpg'
 
-        return _routeImg
+        return routeImg
     
     except:
         erro = sys.exc_info()
-        print("Ocorreu um erro com o download da imagem: ", erro)
+        print(f'{__name__} : {erro}')
