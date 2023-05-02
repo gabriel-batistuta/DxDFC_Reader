@@ -7,17 +7,18 @@ def getLinks(site):
 
     def filterLinksCaps(links):
         keys = ['DOWNLOAD', 'PDF', 'EPUB', 'JPG', 'MEGA', 'JPEG']
+        links = list(filter(lambda x: x.get("href"), links))
         for key in keys:
-            links = list(filter(lambda x: key.lower() not in x["href"], links))
+            links = list(filter(lambda x: key.lower() not in x["href"].lower(), links))
 
         return links
     
-    def removeRepeatedCaps(capList):
+    def removeRepeatedCaps(links):
         listNoReapeated = []
-        for i in capList:
-            link = i["href"].strip()
-            if link not in str(listNoReapeated):
-                listNoReapeated.append(i)
+        for link in links:
+            href = link["href"].strip()
+            if href not in str(listNoReapeated):
+                listNoReapeated.append(link)
 
         return listNoReapeated
 
