@@ -101,7 +101,6 @@ def writeChapter(links, title, resp):
                 for file in fileList:
                     if '.pdf' in file:
                         if index + '.pdf' == file:
-                            print(f'{index} - {file}')
                             concluid.append(file)
                             merger.append(f'{pathPdfFolder}/{file}')
 
