@@ -1,0 +1,19 @@
+@charset "utf-8";
+h1, h3 {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+p { 
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 50px;
+    text-align: justify;
+}
+
+img {
+    text-align: center;
+}
+
+div {
+    text-indent: 40px
+}
