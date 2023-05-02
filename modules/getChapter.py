@@ -5,6 +5,7 @@ import jinja2
 import pdfkit
 import platform
 import PyPDF2
+import time
 
 def writeChapter(links, title, resp):
 
@@ -45,7 +46,7 @@ def writeChapter(links, title, resp):
                 chapter.write(f'{chapterText}\n\n')
 
         elif resp == 'pdf':
-            with open('./template/template.html','r') as file:
+            with open('./templates/template.html','r') as file:
                 data = file.read()
                 with open(f'./novels/{title}/{titleChapter}.html', 'x') as file:
                     file.write(f'{data}')
@@ -118,6 +119,7 @@ def writeChapter(links, title, resp):
         writeChapterForFormat(resp)
         if resp == 'pdf':
             joinPdfs()
+            time.sleep(5)
 
     def log():
         currentDirectory = os. getcwd()
