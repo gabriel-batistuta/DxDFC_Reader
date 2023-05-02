@@ -1,37 +1,129 @@
 import requests
 from bs4 import BeautifulSoup
 import os
+import jinja2
+import pdfkit
+import platform
+import PyPDF2
+import time
 
-def getText(_links, _title):
-    for _link in _links:
-        _href = _link['href']
-        html = requests.get(_href)
-        _site_cap = BeautifulSoup(html.content, 'html.parser')
-        # print(_site_cap.prettify())
-        _divPost = _site_cap.find('div', attrs={'class': 'post-content container'})
-        
-        _title_cap = _site_cap.find('h3', attrs={'class': 'post-title entry-title'})
-        _title_cap = _title_cap.text
+def writeChapter(links, title, resp):
 
-        _cap = open(f'novels/{_title}/{_title}.txt','a+')
-        _cap.write(f'{_title_cap}\n')
+    def getSiteChapter(link):
+        href = link['href']
+        html = requests.get(href)
+        site = BeautifulSoup(html.content, 'html.parser')
 
-        
-        _time = _divPost.find('time', attrs={'class': 'published'})
-        _time = _time.text
-        _cap.write(f'{_time}\n\n')
+        return site
 
-        try:
-            _text = _divPost.find('div', attrs={'class': 'post-body entry-content float-container'})
-        except:
-            _text = _divPost.find('div', attrs={'id': 'post-body entry-content float-container'})
+    def getDivChapter(site):
+        divChapter = site.find('div', attrs={'class': 'post-content container'})
+        divChapter = site.find('div', attrs={'class': 'post-body entry-content float-container'})
 
-        # print(_text)
-        _text = _text.text
+        return divChapter
+    
+    def getTitleChapter(link):
+        titleChapter = link.text.strip()
+
+        return titleChapter
+
+    def getPublicationDate(site):
+        date = site.find('time', attrs={'class': 'published'})
+        date = date.text.strip()
+
+        return date
+
+    def getChapterText(divChapter):
+        chapterText = divChapter.text
+
+        return chapterText
+
+    def writeChapterForFormat(resp):
+        if resp == 'txt':
+            with open(f'./novels/{title}/{title}.txt', 'a+') as chapter:
+                chapter.write(f'{titleChapter}\n\n')
+                chapter.write(f'{date}\n\n')
+                chapter.write(f'{chapterText}\n\n')
+
+        elif resp == 'pdf':
+            with open('./templates/template.html','r') as file:
+                data = file.read()
+                with open(f'./novels/{title}/{titleChapter}.html', 'x') as file:
+                    file.write(f'{data}')
             
-        _cap.write(f'{_text}\n\n')
-        _cap.close()
+            context = {
+                'titleChapter':titleChapter,
+                'date':date,
+                'chapterText':chapterText,
+                'divChapter':divChapter
+            }
 
-    _currentDirectory = os. getcwd()
-    _novel = f'{_currentDirectory}/novels/{_title}.txt'
-    return _novel
+            template_loader = jinja2.FileSystemLoader(f'./novels/{title}')
+            template_env = jinja2.Environment(loader=template_loader)
+            templ = template_env.get_template(f'{titleChapter}.html')
+            output_text = templ.render(context)
+
+            try:
+                if platform.system() == 'Linux':
+                    path_wkhtmltopdf = os.popen('which wkhtmltopdf').read() 
+                    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+                else:
+                    path_wkhtmltopdf = os.popen('where wkhtmltopdf').read() 
+                    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+            except:
+                config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+        
+            pdfkit.from_string(output_text, f'./novels/{title}/{titleChapter}.pdf', configuration=config, css=f'./templates/template.css', options={ 'enable-local-file-access': None })
+
+    def joinPdfs():
+        
+        def getIndexChapters(path=f'./novels/{title}/sumary - {title}.txt'):
+            indexChapters = []
+
+            with open(path, 'r') as file:
+                for chapter in file.readlines():
+                    if chapter != '\n':
+                        if '\n' in chapter:
+                            chapter = chapter.replace('\n','')
+                            indexChapters.append(chapter)
+                        elif '\n' not in chapter:
+                            indexChapters.append(chapter)
+
+            return indexChapters
+
+        def joinPdfsByIndex(indexChapters):
+            pathPdfFolder = f'./novels/{title}'
+            merger = PyPDF2.PdfMerger()
+            fileList = os.listdir(pathPdfFolder)
+
+            concluid = []
+
+            for index in indexChapters:
+                for file in fileList:
+                    if '.pdf' in file:
+                        if index + '.pdf' == file:
+                            concluid.append(file)
+                            merger.append(f'{pathPdfFolder}/{file}')
+
+            merger.write(f'{pathPdfFolder}/{title}.pdf')
+
+        indexChapters = getIndexChapters()
+        joinPdfsByIndex(indexChapters)
+
+    for link in links:
+        site = getSiteChapter(link)
+        titleChapter = getTitleChapter(link)
+        divChapter = getDivChapter(site)
+        date = getPublicationDate(site)
+        chapterText = getChapterText(divChapter)
+        writeChapterForFormat(resp)
+        if resp == 'pdf':
+            joinPdfs()
+            time.sleep(5)
+
+    def log():
+        currentDirectory = os. getcwd()
+        novel = f'{currentDirectory}/novels/{title}'
+        return novel
+    
+    return log()
