@@ -1,0 +1,9 @@
+requests
+
+bs4
+
+jinja2
+
+pdfkit
+
+PyPDF2
