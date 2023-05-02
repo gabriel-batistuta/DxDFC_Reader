@@ -119,7 +119,7 @@ def writeChapter(links, title, resp):
         writeChapterForFormat(resp)
         if resp == 'pdf':
             joinPdfs()
-            time.sleep(5)
+            time.sleep(20)
 
     def log():
         currentDirectory = os. getcwd()
