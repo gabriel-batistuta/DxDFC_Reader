@@ -16,7 +16,6 @@ def writeHeader(site, title):
     blog, aboutBlog, blogLink = getHeader(site)
     blog = filterToStringFormat(blog)
     aboutBlog = filterToStringFormat(aboutBlog)
-
-    blogLink = blog['href'] 
-    with open(f'novels/{title}/README.txt','a+') as file:
+ 
+    with open(f'novels/{title}/README.txt', 'w') as file:
         file.write(f'{blog}\n{aboutBlog}\n{blogLink}')
