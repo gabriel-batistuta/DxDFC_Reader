@@ -1,13 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 import os
-import jinja2
+from jinja2 import Template
 import pdfkit
 import platform
-import PyPDF2
-import time
+from tqdm import tqdm
 
-def writeChapter(links, title, resp):
+def writeChapter(links:list, title:str, img:str, resp:str):
 
     def getSiteChapter(link):
         href = link['href']
@@ -17,7 +16,6 @@ def writeChapter(links, title, resp):
         return site
 
     def getDivChapter(site):
-        divChapter = site.find('div', attrs={'class': 'post-content container'})
         divChapter = site.find('div', attrs={'class': 'post-body entry-content float-container'})
 
         return divChapter
@@ -38,18 +36,9 @@ def writeChapter(links, title, resp):
 
         return chapterText
 
-    def writeChapterForFormat(resp):
-        if resp == 'txt':
-            with open(f'./novels/{title}/{title}.txt', 'a+') as chapter:
-                chapter.write(f'{titleChapter}\n\n')
-                chapter.write(f'{date}\n\n')
-                chapter.write(f'{chapterText}\n\n')
-
-        elif resp == 'pdf':
-            with open('./templates/template.html','r') as file:
-                data = file.read()
-                with open(f'./novels/{title}/{titleChapter}.html', 'x') as file:
-                    file.write(f'{data}')
+    def mountHtmlDiv(titleChapter, divChapter, date, chapterText):
+        with open('./templates/template.html','r') as file:
+            templateString = file.read()
             
             context = {
                 'titleChapter':titleChapter,
@@ -58,68 +47,57 @@ def writeChapter(links, title, resp):
                 'divChapter':divChapter
             }
 
-            template_loader = jinja2.FileSystemLoader(f'./novels/{title}')
-            template_env = jinja2.Environment(loader=template_loader)
-            templ = template_env.get_template(f'{titleChapter}.html')
-            output_text = templ.render(context)
-
-            try:
-                if platform.system() == 'Linux':
-                    path_wkhtmltopdf = os.popen('which wkhtmltopdf').read() 
-                    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-                else:
-                    path_wkhtmltopdf = os.popen('where wkhtmltopdf').read() 
-                    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-            except:
-                config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+            templateDiv = Template(templateString)
+            templateDiv = templateDiv.render(context)
         
-            pdfkit.from_string(output_text, f'./novels/{title}/{titleChapter}.pdf', configuration=config, css=f'./templates/template.css', options={ 'enable-local-file-access': None })
+        return templateDiv
 
-    def joinPdfs():
-        
-        def getIndexChapters(path=f'./novels/{title}/sumary - {title}.txt'):
-            indexChapters = []
+    def writeChapterForFormat(resp, startHtml):
+        if resp == 'txt':
+            with open(f'./novels/{title}/{title}.txt', 'a+') as chapter:
+                chapter.write(f'{titleChapter}\n\n')
+                chapter.write(f'{date}\n\n')
+                chapter.write(f'{chapterText}\n\n')
 
-            with open(path, 'r') as file:
-                for chapter in file.readlines():
-                    if chapter != '\n':
-                        if '\n' in chapter:
-                            chapter = chapter.replace('\n','')
-                            indexChapters.append(chapter)
-                        elif '\n' not in chapter:
-                            indexChapters.append(chapter)
+        elif resp == 'pdf':
+            endHtml = '</body></html>'
+            cssPath = './templates/template.css'
+            
+            if platform.system() == 'Windows':
+                path_wkhtmltopdf = os.popen('where wkhtmltopdf').read() 
+                config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+            else:
+                path_wkhtmltopdf = os.popen('which wkhtmltopdf').read() 
+                config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+            # config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+                    
+            pdfkit.from_string(startHtml+endHtml, f'./novels/{title}/{title}.pdf', configuration=config, css=cssPath, options={
+                'enable-local-file-access': None, 
+                'encoding': 'UTF-8',
+                '--image-quality': 100
+            })
 
-            return indexChapters
+    startHtml = f'<html><head><meta http-equiv="Content-type" content="text/html; charset=utf-8"/></head><body><img src="{img}" alt="main-picture" class="cover">'
+    with tqdm(total=len(links)) as progress_bar:
+        progress_bar.desc='downloading chapters'
+        progress_bar.colour='red'
 
-        def joinPdfsByIndex(indexChapters):
-            pathPdfFolder = f'./novels/{title}'
-            merger = PyPDF2.PdfMerger()
-            fileList = os.listdir(pathPdfFolder)
-
-            concluid = []
-
-            for index in indexChapters:
-                for file in fileList:
-                    if '.pdf' in file:
-                        if index + '.pdf' == file:
-                            concluid.append(file)
-                            merger.append(f'{pathPdfFolder}/{file}')
-
-            merger.write(f'{pathPdfFolder}/{title}.pdf')
-
-        indexChapters = getIndexChapters()
-        joinPdfsByIndex(indexChapters)
-
-    for link in links:
-        site = getSiteChapter(link)
-        titleChapter = getTitleChapter(link)
-        divChapter = getDivChapter(site)
-        date = getPublicationDate(site)
-        chapterText = getChapterText(divChapter)
-        writeChapterForFormat(resp)
-        if resp == 'pdf':
-            joinPdfs()
-            time.sleep(20)
+        for link in links:
+            site = getSiteChapter(link)
+            titleChapter = getTitleChapter(link)
+            date = getPublicationDate(site)
+            divChapter = getDivChapter(site)
+            chapterText = getChapterText(divChapter)
+            if resp == 'pdf':
+                templateDiv = mountHtmlDiv(titleChapter, divChapter, date, chapterText)
+                startHtml += templateDiv
+                progress_bar.update(1)
+            elif resp == 'txt':
+                writeChapterForFormat(resp, startHtml)
+                progress_bar.update(1)
+        progress_bar.close()
+    if resp == 'pdf':
+        writeChapterForFormat(resp, startHtml)
 
     def log():
         currentDirectory = os. getcwd()

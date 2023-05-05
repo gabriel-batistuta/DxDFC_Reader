@@ -4,10 +4,9 @@ h1, h3 {
     text-align: center;
 }
 
-p { 
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 50px;
-    text-align: justify;
+.cover {
+    margin: auto; 
+    display: block;
 }
 
 img {
@@ -15,5 +14,13 @@ img {
 }
 
 div {
-    text-indent: 40px
+    text-indent: 40px;
+    line-height: 1.8;
+    text-align: justify;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+
+div.page-break {
+    page-break-after: always;
 }
