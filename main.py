@@ -1,5 +1,6 @@
 import modules
 import time
+import os
 
 CYAN  = "\033[1;36m"
 GREEN = "\033[0;32m"
@@ -9,8 +10,8 @@ def callModules(resp):
 
     start_time = time.time()
 
-    modules.cleanDiretory()
     url = modules.getUrl()
+    os.system('clear')
     site = modules.filterUrl(url)
     title = modules.getTitle(site)
     modules.makeFolder(title)
@@ -19,7 +20,7 @@ def callModules(resp):
     modules.downloadImage(img, title)
     links = modules.getLinks(site)
     modules.writeSumary(links, title)
-    novel = modules.writeChapter(links, title, resp)
+    novel = modules.writeChapter(links, title, img, resp)
 
     end_time = time.time()
     elapsed_time = int(end_time - start_time)
@@ -31,7 +32,4 @@ if __name__ == '__main__':
 
     resp = modules.menu()
     title, novel = callModules(resp)
-    if resp == 'pdf':
-        modules.removeTemplates(title)
-        modules.removeNoMainPdfs(title)
     print(f'\n\n{CYAN}{title}{RESET} em: {GREEN}{novel}')
