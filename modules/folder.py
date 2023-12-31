@@ -11,6 +11,11 @@ def makeFolder(_title):
     else:
         os.mkdir(f'./novels/{_title}')
 
+    if os.path.isdir(f'./novels/{_title}/ilustrations'):
+        pass
+    else:
+        os.mkdir(f'./novels/{_title}/ilustrations')
+
 def removeTemplates(title):
     path=f'./novels/{title}'
     for file in os.listdir(path):

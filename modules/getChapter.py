@@ -9,8 +9,7 @@ from tqdm import tqdm
 def writeChapter(links:list, title:str, img:str, resp:str):
 
     def getSiteChapter(link):
-        href = link['href']
-        html = requests.get(href)
+        html = requests.get(link['href'])
         site = BeautifulSoup(html.content, 'html.parser')
 
         return site
@@ -79,8 +78,8 @@ def writeChapter(links:list, title:str, img:str, resp:str):
 
     startHtml = f'<html><head><meta http-equiv="Content-type" content="text/html; charset=utf-8"/></head><body><img src="{img}" alt="main-picture" class="cover">'
     with tqdm(total=len(links)) as progress_bar:
-        progress_bar.desc='downloading chapters'
-        progress_bar.colour='red'
+        progress_bar.desc=f'download {title}'
+        progress_bar.colour='blue'
 
         for link in links:
             site = getSiteChapter(link)
@@ -96,12 +95,5 @@ def writeChapter(links:list, title:str, img:str, resp:str):
                 writeChapterForFormat(resp, startHtml)
                 progress_bar.update(1)
         progress_bar.close()
-    if resp == 'pdf':
-        writeChapterForFormat(resp, startHtml)
-
-    def log():
-        currentDirectory = os. getcwd()
-        novel = f'{currentDirectory}/novels/{title}'
-        return novel
-    
-    return log()
+        
+    writeChapterForFormat(resp, startHtml)
