@@ -25,10 +25,13 @@ def download_all_images(links_chapters, title):
     for link in links_chapters:
         html_content = BeautifulSoup(requests.get(link).content, 'html.parser')
         main_content = html_content.find('div', attrs={'class':'post-body-container'})
-        images_tags = main_content.find_all('img')
-        for image in images_tags:
-            print(image['src'])
-            novel_ilustrations.append(image['src'])
+        divs = main_content.find_all('div', {'class': 'separator'})
+        for div in divs:
+            link = div.find('a')
+            img_tag = link.find('img')
+            img_tag['src'] = link['href']
+            if img_tag['src'] not in novel_ilustrations:
+                novel_ilustrations.append(img_tag['src'])
 
     for i, ilustration in enumerate(novel_ilustrations):
         try:

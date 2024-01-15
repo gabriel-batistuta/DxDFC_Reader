@@ -9,15 +9,37 @@ from tqdm import tqdm
 def writeChapter(links:list, title:str, img:str, resp:str):
 
     def getSiteChapter(link):
-        html = requests.get(link['href'])
-        site = BeautifulSoup(html.content, 'html.parser')
+        
+        # session = HTMLSession()
+        # r = session.get(link['href'])
+        # r.html.render()
+        # html = r.html.html
+
+        html = requests.get(link['href']).content
+        site = BeautifulSoup(html, 'html.parser')
 
         return site
 
     def getDivChapter(site):
         divChapter = site.find('div', attrs={'class': 'post-body entry-content float-container'})
 
+        def ajustImages(soup):
+            divs = soup.find_all('div', {'class': 'separator'})
+            for div in divs:
+                link = div.find('a')
+                img_tag = link.find('img')
+                img_tag2 = img_tag
+                img_tag2['src'] = link['href']
+                img_tag2['width'] = img_tag2['data-original-width']
+                img_tag2['height'] = img_tag2['data-original-height']
+                soup.find(lambda tag: tag.name == 'img' and str(img_tag) == str(tag)).replace_with(img_tag2)
+
+            return soup
+
+        divChapter = ajustImages(divChapter)
+
         return divChapter
+
     
     def getTitleChapter(link):
         titleChapter = link.text.strip()
