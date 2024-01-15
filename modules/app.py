@@ -9,10 +9,10 @@ def menu():
 
     response = inquirer.prompt(options)
 
-    elif response['option'] == '.pdf':
+    if response['option'] == '.pdf':
         resp = 'pdf'
 
-    if response['option'] == '.txt':
+    elif response['option'] == '.txt':
         resp = 'txt'
         
     elif response['option'] == 'Sair':
