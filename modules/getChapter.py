@@ -5,17 +5,18 @@ from jinja2 import Template
 import pdfkit
 import platform
 from tqdm import tqdm
+from requests_html import HTMLSession
 
 def writeChapter(links:list, title:str, img:str, resp:str):
 
     def getSiteChapter(link):
         
-        # session = HTMLSession()
-        # r = session.get(link['href'])
-        # r.html.render()
-        # html = r.html.html
+        session = HTMLSession()
+        r = session.get(link['href'])
+        r.html.render()
+        html = r.html.html
 
-        html = requests.get(link['href']).content
+        # html = requests.get(link['href']).content
         site = BeautifulSoup(html, 'html.parser')
 
         return site
@@ -25,14 +26,16 @@ def writeChapter(links:list, title:str, img:str, resp:str):
 
         def ajustImages(soup):
             divs = soup.find_all('div', {'class': 'separator'})
-            for div in divs:
-                link = div.find('a')
-                img_tag = link.find('img')
-                img_tag2 = img_tag
-                img_tag2['src'] = link['href']
-                img_tag2['width'] = img_tag2['data-original-width']
-                img_tag2['height'] = img_tag2['data-original-height']
-                soup.find(lambda tag: tag.name == 'img' and str(img_tag) == str(tag)).replace_with(img_tag2)
+            if type(divs) == list and len(divs) > 0:
+                for div in divs:
+                    link = div.find('a')
+                    if link is not None and link.find('img'):
+                        img_tag = link.find('img')
+                        img_tag2 = img_tag
+                        img_tag2['src'] = link['href']
+                        img_tag2['width'] = img_tag2['data-original-width']
+                        img_tag2['height'] = img_tag2['data-original-height']
+                        soup.find(lambda tag: tag.name == 'img' and str(img_tag) == str(tag)).replace_with(img_tag2)
 
             return soup
 
@@ -117,5 +120,9 @@ def writeChapter(links:list, title:str, img:str, resp:str):
                 writeChapterForFormat(resp, startHtml)
                 progress_bar.update(1)
         progress_bar.close()
+        if platform.system() == 'Windows':
+            os.system('cls')
+        else:
+            os.system('clear')
         
     writeChapterForFormat(resp, startHtml)
