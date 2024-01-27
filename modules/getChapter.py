@@ -5,18 +5,18 @@ from jinja2 import Template
 import pdfkit
 import platform
 from tqdm import tqdm
-from requests_html import HTMLSession
+# from requests_html import HTMLSession
 
 def writeChapter(links:list, title:str, img:str, resp:str):
 
     def getSiteChapter(link):
         
-        session = HTMLSession()
-        r = session.get(link['href'])
-        r.html.render()
-        html = r.html.html
+        # session = HTMLSession()
+        # r = session.get(link['href'])
+        # r.html.render()
+        # html = r.html.html
 
-        # html = requests.get(link['href']).content
+        html = requests.get(link['href']).content
         site = BeautifulSoup(html, 'html.parser')
 
         return site
@@ -26,7 +26,7 @@ def writeChapter(links:list, title:str, img:str, resp:str):
 
         def ajustImages(soup):
             divs = soup.find_all('div', {'class': 'separator'})
-            if type(divs) == list and len(divs) > 0:
+            if len(divs) > 0:
                 for div in divs:
                     link = div.find('a')
                     if link is not None and link.find('img'):

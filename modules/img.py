@@ -3,9 +3,10 @@ from bs4 import BeautifulSoup
 import sys
 
 def getImageCover(site):
-    imgs = site.find_all('img')
+    div = site.find('div', class_='separator')
+    link = div.find('a')
     
-    imagem = imgs[0]['src']
+    imagem = link['href']
     
     return imagem
 
@@ -26,7 +27,7 @@ def download_all_images(links_chapters, title):
         html_content = BeautifulSoup(requests.get(link).content, 'html.parser')
         main_content = html_content.find('div', attrs={'class':'post-body-container'})
         divs = main_content.find_all('div', {'class': 'separator'})
-        if type(divs) == list and len(divs) > 0:
+        if len(divs) > 0:
             for div in divs:
                 link = div.find('a')
                 if link is not None and link.find('img'):        

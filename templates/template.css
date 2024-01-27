@@ -4,13 +4,19 @@ h1, h3 {
     text-align: center;
 }
 
+img {
+    text-align: center;
+    /* quebra de página pra imagem sempre começar em uma nova página */
+    page-break-before: always;
+    /* tamanho máximo de página A4 */
+    max-width: 3508px;
+    max-height: 2480px;
+}
+
 .cover {
     margin: auto; 
     display: block;
-}
-
-img {
-    text-align: center;
+    page-break-before: avoid;
 }
 
 div {
