@@ -1,6 +1,6 @@
 # What is DxDFC Reader?
 
-<img src="assets/content/pdf-novel.png" style="width:50vw; height:70vh;">
+<img src="assets/content/pdf-novel.png">
 
 This is a script written in Python to generate light novel reading files made by fansubs of light novel [High School DxD](https://pt.wikipedia.org/wiki/High_School_DxD)
 
